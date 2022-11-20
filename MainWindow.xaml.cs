@@ -198,14 +198,17 @@ namespace MusicViz
             {
                 toolBarRow.MaxHeight = toolBarRow.MaxHeight > 0 ? 0 : 92;
                 redrawOnNextFrame = true;
+                e.Handled = true;
             }
             else if (e.Key == Key.G)
             {
                 WpfPlot1.Visibility = WpfPlot1.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+                e.Handled = true;
             }
             else if (e.Key == Key.R)
             {
                 redrawOnNextFrame = true;
+                e.Handled = true;
             }
 
         }
@@ -293,7 +296,7 @@ namespace MusicViz
 
             if (ViewModel.ShowAudioBars && !drawer.HasShape<AudioBar>())
             {
-                drawer.AddAudiobars(5, new FreqRange(ViewModel.AudioBarMin, ViewModel.AudioBarMax), ViewModel.AudioBarFreqInterval, new Thickness(ViewModel.AudioBarMarginLeft, 0, ViewModel.AudioBarMarginRight, 0), ViewModel.FlipAudioBars);
+                drawer.AddAudiobars(4, new FreqRange(ViewModel.AudioBarMin, ViewModel.AudioBarMax), ViewModel.AudioBarFreqInterval, new Thickness(ViewModel.AudioBarMarginLeft, 0, ViewModel.AudioBarMarginRight, 0), ViewModel.FlipAudioBars);
             }
             else if (!ViewModel.ShowAudioBars)
             {

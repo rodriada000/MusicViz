@@ -50,7 +50,7 @@ namespace MusicViz.Shapes
             }
             else
             {
-                element.Height = Math.Abs(relevantPower.Max()) * (CanvasUtil.Instance.Height * 0.75) * scale;
+                element.Height = Math.Min(Math.Abs(relevantPower.Max()) * (CanvasUtil.Instance.Height * 0.75) * scale, CanvasUtil.Instance.Height * 0.75);
             }
 
         }
