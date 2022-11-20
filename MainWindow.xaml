@@ -15,6 +15,7 @@
             <RowDefinition x:Name="toolBarRow" MaxHeight="92"></RowDefinition>
 
         </Grid.RowDefinitions>
+
         <Canvas x:Name="MainCanvas" Loaded="MainCanvas_Loaded" Background="#2b2b2b" RenderOptions.BitmapScalingMode="HighQuality" RenderOptions.EdgeMode="Unspecified">
         </Canvas>
 
@@ -29,24 +30,28 @@
                 Margin="10"></Slider>
         <Label Content="{Binding TimerUpdateInterval, FallbackValue='50'}" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="210,6,0,0"></Label>
 
-        <Slider Grid.Row="1" 
+
+
+        <GroupBox Header="Circles" Grid.Row="1" HorizontalAlignment="Right" Margin="5,5,320,5">
+            <Grid>
+                <Slider 
                 Value="{Binding MovingCircleCount, FallbackValue='100', Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                 ValueChanged="Slider_ValueChanged"
-                Minimum="10" 
+                Minimum="0" 
                 Maximum="600"
                 Interval="2"
                 Width="200"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Margin="10,40,0,0"></Slider>
-        <Label Content="{Binding MovingCircleCount, FallbackValue='50'}" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="210,34,0,0"></Label>
-
-        <WpfPlot Name="WpfPlot1"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Hidden"/>
-
+                Margin="2,5,25,2"></Slider>
+                <Label Content="{Binding MovingCircleCount, FallbackValue='50'}" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,2,0"></Label>
+            </Grid>
+        </GroupBox>
+        
 
         <GroupBox Header="Waveform Circle" Grid.Row="1" HorizontalAlignment="Right" Margin="5,5,180,5">
             <Grid>
-                <CheckBox x:Name="chkWaveCircle" Click="chkAudioBars_Click" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="2" Content="Visible"  IsChecked="{Binding ShowWaveformCircle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></CheckBox>
+                <CheckBox x:Name="chkWaveCircle" Click="chkAudioBars_Click" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="2,2,4,2" Content="Visible"  IsChecked="{Binding ShowWaveformCircle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></CheckBox>
 
                 <Slider Grid.Row="1" 
                 Name="waveFormSlider"
@@ -58,9 +63,11 @@
                 Width="110"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Margin="0,25,10,0"></Slider>
-                <Label Content="{Binding WaveFormCircleCount, FallbackValue='5'}" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,20,0,0"></Label>
+                Margin="0,20,10,0"></Slider>
+                <Label Content="{Binding WaveFormCircleCount, FallbackValue='5'}" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,15,0,0"></Label>
 
+                <TextBox Margin="4,0,0,0" VerticalAlignment="Bottom" Width="50" HorizontalAlignment="Left" Text="{Binding WaveFormMinSizeInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue='0,0'}" ToolTip="Min Rand Size Format: 0,0"></TextBox>
+                <TextBox Margin="0,0,4,0" VerticalAlignment="Bottom" Width="50" HorizontalAlignment="Right" Text="{Binding WaveFormMaxSizeInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue='0,0'}" ToolTip="Min Rand Size Format: 0,0"></TextBox>
             </Grid>
             
         </GroupBox>
@@ -71,7 +78,7 @@
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <StackPanel>
+                <StackPanel Margin="0,0,5,0">
                     <Slider 
                             Value="{Binding AudioBarMax, FallbackValue='4000', Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                             ValueChanged="waveFormSlider_ValueChanged"
@@ -92,6 +99,7 @@
                             HorizontalAlignment="Right"
                             VerticalAlignment="Top"
                             Margin="1"></Slider>
+                    <CheckBox x:Name="chkFlipBars" Margin="0,4,0,0" Content="On Bottom" HorizontalAlignment="Left" IsChecked="{Binding FlipAudioBars, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue='true'}"></CheckBox>
                 </StackPanel>
                 <StackPanel Grid.Column="1">
                     <CheckBox x:Name="chkAudioBars" Click="chkAudioBars_Click" Margin="0,0,0,2" Content="Visible" IsChecked="{Binding ShowAudioBars, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></CheckBox>
@@ -100,6 +108,9 @@
                 </StackPanel>
             </Grid>
         </GroupBox>
-        
+
+
+        <WpfPlot Name="WpfPlot1"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Hidden"/>
+
     </Grid>
 </Window>

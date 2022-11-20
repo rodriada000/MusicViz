@@ -48,7 +48,7 @@ namespace MusicViz.Shapes
             }
             else
             {
-                element.Width = Math.Abs(Math.Log(Math.Sqrt(relevantPower.Max() * 100))) * scale;
+                element.Width = Math.Abs(Math.Log(relevantPower.Max() * 100)) * scale;
 
                 if (ReactRange.Between(results.PeakFreq))
                 {

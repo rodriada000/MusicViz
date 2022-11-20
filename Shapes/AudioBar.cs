@@ -12,11 +12,13 @@ namespace MusicViz.Shapes
     {
         public double scale = 5;
 
-        public AudioBar(double x, double y, Shape element, FreqRange range) : base(x, y, element)
+        public AudioBar(double x, double y, Shape element, FreqRange range, bool isFlipped = true) : base(x, y, element)
         {
             element.Margin = new System.Windows.Thickness(x, y, 0, 0);
             this.ReactRange = range;
             this.max_size = 128;
+
+            this.element.RenderTransform = isFlipped ? new System.Windows.Media.ScaleTransform(1, -1) : null;
         }
 
         public override void Update(FFTResult results, float[] rawBuffer)

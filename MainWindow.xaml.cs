@@ -29,7 +29,7 @@ namespace MusicViz
 
 
         private object bufferLock = new object();
-
+        private bool redrawOnNextFrame;
 
         public MainWindow()
         {
@@ -103,6 +103,12 @@ namespace MusicViz
             {
                 _timer.Interval = TimeSpan.FromMilliseconds(ViewModel.TimerUpdateInterval);
                 return;
+            }
+
+            if (redrawOnNextFrame)
+            {
+                Redraw();
+                redrawOnNextFrame = false;
             }
 
 
@@ -191,10 +197,15 @@ namespace MusicViz
             if (e.Key == Key.C)
             {
                 toolBarRow.MaxHeight = toolBarRow.MaxHeight > 0 ? 0 : 92;
+                redrawOnNextFrame = true;
             }
             else if (e.Key == Key.G)
             {
                 WpfPlot1.Visibility = WpfPlot1.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+            }
+            else if (e.Key == Key.R)
+            {
+                redrawOnNextFrame = true;
             }
 
         }
@@ -217,7 +228,7 @@ namespace MusicViz
         private void Redraw()
         {
             drawer?.ClearAll();
-            drawer?.RedrawCircles((int)ViewModel?.MovingCircleCount, MainCanvas.ActualWidth, MainCanvas.ActualWidth);
+            drawer?.RedrawCircles((int)ViewModel?.MovingCircleCount, MainCanvas.ActualWidth, MainCanvas.ActualHeight);
 
             ToggleAudioBars();
             ToggleWaveformCircles();
@@ -227,7 +238,7 @@ namespace MusicViz
         {
             for (int i = 0; i < ViewModel?.WaveFormCircleCount; i++)
             {
-                drawer?.DrawWaveFormCircle();
+                drawer?.DrawWaveFormCircle(ViewModel.WaveFormMinSize, ViewModel.WaveFormMaxSize);
             }
         }
 
@@ -282,7 +293,7 @@ namespace MusicViz
 
             if (ViewModel.ShowAudioBars && !drawer.HasShape<AudioBar>())
             {
-                drawer.AddAudiobars(5, new FreqRange(ViewModel.AudioBarMin, ViewModel.AudioBarMax), ViewModel.AudioBarFreqInterval, new Thickness(ViewModel.AudioBarMarginLeft, 0, ViewModel.AudioBarMarginRight, 0));
+                drawer.AddAudiobars(5, new FreqRange(ViewModel.AudioBarMin, ViewModel.AudioBarMax), ViewModel.AudioBarFreqInterval, new Thickness(ViewModel.AudioBarMarginLeft, 0, ViewModel.AudioBarMarginRight, 0), ViewModel.FlipAudioBars);
             }
             else if (!ViewModel.ShowAudioBars)
             {
