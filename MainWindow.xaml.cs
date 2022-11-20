@@ -4,6 +4,7 @@ using MusicViz.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -158,7 +159,7 @@ namespace MusicViz
 
             lock (bufferLock)
             {
-                if (lastBuffer is null || lastBuffer.Length != e.BytesRecorded)
+                if (lastBuffer is null || lastBuffer.Length != samplesRecorded)
                     lastBuffer = new float[samplesRecorded];
 
                 int k = 0;
@@ -189,7 +190,7 @@ namespace MusicViz
         {
             if (e.Key == Key.C)
             {
-                toolBarRow.MaxHeight = toolBarRow.MaxHeight > 0 ? 0 : 64;
+                toolBarRow.MaxHeight = toolBarRow.MaxHeight > 0 ? 0 : 92;
             }
             else if (e.Key == Key.G)
             {
@@ -200,13 +201,12 @@ namespace MusicViz
 
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (drawer == null)
+            if (ViewModel == null || drawer == null)
             {
                 return;
             }
 
-            drawer.Clear<MovingCircle>();
-            drawer.RedrawCircles((int)ViewModel.MovingCircleCount, MainCanvas.ActualWidth, MainCanvas.ActualWidth);
+            Redraw();
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -219,6 +219,12 @@ namespace MusicViz
             drawer?.ClearAll();
             drawer?.RedrawCircles((int)ViewModel?.MovingCircleCount, MainCanvas.ActualWidth, MainCanvas.ActualWidth);
 
+            ToggleAudioBars();
+            ToggleWaveformCircles();
+        }
+
+        private void DrawWaveFormCircles()
+        {
             for (int i = 0; i < ViewModel?.WaveFormCircleCount; i++)
             {
                 drawer?.DrawWaveFormCircle();
@@ -241,11 +247,46 @@ namespace MusicViz
 
         private void waveFormSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            drawer?.Clear<WaveFormCircle>();
+            Redraw();
+        }
 
-            for (int i = 0; i < ViewModel?.WaveFormCircleCount; i++)
+        private void chkAudioBars_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleAudioBars();
+            ToggleWaveformCircles();
+        }
+
+        private void ToggleWaveformCircles()
+        {
+            if (ViewModel == null || drawer == null)
             {
-                drawer?.DrawWaveFormCircle();
+                return;
+            }
+
+            if (ViewModel.ShowWaveformCircle && !drawer.HasShape<WaveFormCircle>())
+            {
+                DrawWaveFormCircles();
+            }
+            else if (!ViewModel.ShowWaveformCircle)
+            {
+                drawer.Clear<WaveFormCircle>();
+            }
+        }
+
+        private void ToggleAudioBars()
+        {
+            if (ViewModel == null || drawer == null)
+            {
+                return;
+            }
+
+            if (ViewModel.ShowAudioBars && !drawer.HasShape<AudioBar>())
+            {
+                drawer.AddAudiobars(5, new FreqRange(ViewModel.AudioBarMin, ViewModel.AudioBarMax), ViewModel.AudioBarFreqInterval, new Thickness(ViewModel.AudioBarMarginLeft, 0, ViewModel.AudioBarMarginRight, 0));
+            }
+            else if (!ViewModel.ShowAudioBars)
+            {
+                drawer.Clear<AudioBar>();
             }
         }
     }

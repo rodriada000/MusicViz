@@ -1,6 +1,7 @@
 ﻿using MusicViz.Shapes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -73,38 +74,43 @@ namespace MusicViz.Classes
             _canvas.Children.Add(circle);
         }
 
-        public void AddAudiobars(int width, int scale)
+        public void AddAudiobars(int scale, FreqRange freqRange, int freqInterval = 50, Thickness margin = default, Color color = default)
         {
-            var color = new SolidColorBrush(Color.FromArgb((byte)_randGen.Next(100, 220), (byte)_randGen.Next(0, 255), (byte)_randGen.Next(0, 255), (byte)_randGen.Next(0, 255)));
+            if (color == default)
+            {
+                color = Color.FromArgb((byte)_randGen.Next(100, 220), (byte)_randGen.Next(0, 255), (byte)_randGen.Next(0, 255), (byte)_randGen.Next(0, 255));
+            }
+
+            var colorBrush = new SolidColorBrush(color);
 
 
-            int init_x = 0;
-            int init_y = 0;
+
+            double init_x = margin.Left;
+            double init_y = 0;
             int offset = 0;
-            int incBy = 50;
+            int maxFreq = (int)Math.Round(freqRange.Max, 0);
 
-            for (int i = 0; i < 4000; i += incBy)
+            double totalWidth = CanvasUtil.Instance.Width;
+            if (margin.Right > 0)
+            {
+                totalWidth -= margin.Right;
+            }
+
+            int num_bars = maxFreq / freqInterval;
+            double size = totalWidth / num_bars;
+
+            for (int i = (int)Math.Round(freqRange.Min, 0); i < maxFreq; i += freqInterval)
             {
                 Rectangle rect = new Rectangle()
                 {
-                    Width = width,
-                    Height = 5,
-                    Stroke = color,
-                    Fill = color,
+                    Width = size,
+                    Stroke = colorBrush,
+                    Fill = colorBrush,
                     StrokeThickness = 1,
                     VerticalAlignment = VerticalAlignment.Top
                 };
 
-                Shapes.Add(new AudioBar(init_x + width * offset + width * 2, init_y, rect, new FreqRange(i, i + incBy)) { scale = scale });
-
-                if (i > 1000)
-                {
-                    incBy = 200;
-                }
-                else if (i > 3000)
-                {
-                    incBy = 400;
-                }
+                Shapes.Add(new AudioBar(init_x + (size * offset), init_y, rect, new FreqRange(i, i + freqInterval)) { scale = scale });
 
                 _canvas.Children.Add(rect);
                 offset++;
@@ -155,8 +161,18 @@ namespace MusicViz.Classes
             Shapes.RemoveAll(s => s is T);
         }
 
-        internal void DrawWaveFormCircle()
+        internal void DrawWaveFormCircle(double pos_x = -1, double pos_y = -1)
         {
+            if (pos_x < 0)
+            {
+                pos_x = CanvasUtil.Instance.Width / 2;
+            }
+
+            if (pos_y < 0)
+            {
+                pos_y = CanvasUtil.Instance.Height / 2;
+            }
+
             var color = new SolidColorBrush(Color.FromArgb(255, (byte)_randGen.Next(0, 255), (byte)_randGen.Next(0, 255), (byte)_randGen.Next(0, 255)));
 
             Polyline line = new Polyline()
@@ -166,7 +182,7 @@ namespace MusicViz.Classes
                 Points = new PointCollection(360),
             };
 
-            DrawWaveFormCircle(new WaveFormCircle(CanvasUtil.Instance.Width / 2, CanvasUtil.Instance.Height / 2, line)
+            DrawWaveFormCircle(new WaveFormCircle(pos_x, pos_y, line)
             {
                 min_size = _randGen.Next(10, 50),
                 max_size = _randGen.Next(100, (int)CanvasUtil.Instance.Height / 2),
@@ -189,6 +205,11 @@ namespace MusicViz.Classes
             }
 
             Shapes.Clear();
+        }
+
+        public bool HasShape<T>()
+        {
+            return Shapes?.Any(s => s is T) == true;
         }
     }
 
